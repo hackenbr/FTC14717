@@ -9,25 +9,25 @@ https://www.tutorialspoint.com/java/index.htm
 
 Once you have android studio set up, go under the build.gradle file and add the following code under everything.
 
-allprojects {
-    repositories {
-        google() // and here
-        jcenter()
+    allprojects {
+        repositories {
+            google() // and here
+            jcenter()
+        }
     }
-}
 
 Then to create your first file go to TeamCode->src->main->java->org.firstinspires.ftc.teamcode
 Then right click the file and make a new java class. name it "MyFirstJavaOPMode". Then copy the code into the java class.
 
 Unfortunatly you will not be able to test the code until you have a phone.
 
-package org.firstinspires.ftc.teamcode;
+    package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+    import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+    import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp
-public class MyFirstJavaOpMode extends LinearOpMode {
+    @TeleOp
+    public class MyFirstJavaOpMode extends LinearOpMode {
     
     @Override
     public void runOpMode() {
