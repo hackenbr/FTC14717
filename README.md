@@ -7,6 +7,10 @@ https://www.firstinspires.org/resource-library/ftc/technology-information-and-re
 Java Tutorials:
 https://www.tutorialspoint.com/java/index.htm
 
+
+TensorFlow:
+https://github.com/google/ftc-object-detection
+
 Once you have android studio set up, go under the build.gradle file and add the following code under everything.
 
     allprojects {
