@@ -11,6 +11,9 @@ https://www.tutorialspoint.com/java/index.htm
 TensorFlow:
 https://github.com/google/ftc-object-detection
 
+Tensor Flow Op Mode:
+https://github.com/ftctechnh/ftc_app/wiki/Java-Sample-TensorFlow-Object-Detection-Op-Mode
+
 Once you have android studio set up, go under the build.gradle file and add the following code under everything.
 
     allprojects {
