@@ -7,12 +7,14 @@ https://www.firstinspires.org/resource-library/ftc/technology-information-and-re
 Java Tutorials:
 https://www.tutorialspoint.com/java/index.htm
 
-
 TensorFlow:
 https://github.com/google/ftc-object-detection
 
 Tensor Flow Op Mode:
 https://github.com/ftctechnh/ftc_app/wiki/Java-Sample-TensorFlow-Object-Detection-Op-Mode
+
+Vuforia Key:
+Aee3IwT/////AAABmUPHs0IW4kz/viGy76aZXMQkMGeo5EFXC+SUmupKBZzxWomke76D3lprzs3nsV0NfI9n9Y1+K1P0zQzAt3dfGRlcVOXflRjS81+/VLc2XkZ52ZJW7ZeQhg2Q2xgZUGhpQVZwvgX4Q1p8iW5iELCxkuQivPJ7k6cCqTM7wSFRJMmXqG7lFS4oa1vv6+yL8C0fvOkXZLh8ifrOzzQ+3ZUvEx/SrSM4mNAMbMfYEPE9JVGcTUOqoNkfe3ALWl6EfT7lJHxAn3Ae4KTAIfPtdcajQehTkRiqnf8mFQUEWDZFk8GZknSoZfyiaarqIUZBHvaSO9RyYCZUnI9y+zEh65S7TuR49DJCrT30uRY4QyuVfizT
 
 Once you have android studio set up, go under the build.gradle file and add the following code under everything.
 
