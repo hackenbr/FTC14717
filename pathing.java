@@ -20,7 +20,7 @@ public class pathing extends LinearOpMode {
 
 
 
-    private void turn (double degrees){
+    private void turnleft (double degrees){
 
         runtime.reset();
 
@@ -28,6 +28,23 @@ public class pathing extends LinearOpMode {
         while (opModeIsActive() && (runtime.time()<movetime)){
             leftDrive.setPower(-1);
             rightDrive.setPower(1);
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("left motor",leftDrive.toString());
+            telemetry.addData("right motor", rightDrive.toString());
+            telemetry.addData("other thing", runtime.time());
+            telemetry.update();
+        }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+    }
+    private void turnright (double degrees){
+
+        runtime.reset();
+
+        double movetime= (degrees/70);
+        while (opModeIsActive() && (runtime.time()<movetime)){
+            leftDrive.setPower(1);
+            rightDrive.setPower(-1);
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("left motor",leftDrive.toString());
             telemetry.addData("right motor", rightDrive.toString());
@@ -85,7 +102,7 @@ public class pathing extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             move(150);
-            turn(135);
+            turnleft(135);
             move(250);
             break;
         }
