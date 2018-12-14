@@ -52,3 +52,7 @@ Unfortunatly you will not be able to test the code until you have a phone.
             }
         }
     }
+    
+    
+    Android Studio Fix:
+    https://stackoverflow.com/questions/51222065/android-studio-sdk-manager-is-missing
