@@ -54,3 +54,35 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
 	angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("heading", angles.firstAngle);
 
+
+//Function for turning robot
+    private void turnAngle(double value) {
+        double angle;
+        angle = value;
+        double currentAngle;
+        double Threshold = 5.0;
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        currentAngle = angles.firstAngle;
+        if (angle > 0) {
+            while (angle >= (angles.firstAngle - currentAngle) + Threshold || angle >= (angles.firstAngle - currentAngle) - Threshold) {
+                leftDrive.setPower(-1);
+                rightDrive.setPower(1);
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                telemetry.addData("heading", angles.firstAngle);
+                telemetry.update();
+            }
+            leftDrive.setPower(0);
+            rightDrive.setPower(0);
+        }
+    if (angle < 0) {
+        while (angle <= (angles.firstAngle - currentAngle) + Threshold || angle <= (angles.firstAngle - currentAngle) - Threshold) {
+            leftDrive.setPower(1);
+            rightDrive.setPower(-1);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("heading", angles.firstAngle);
+            telemetry.update();
+        }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+    }
+}
