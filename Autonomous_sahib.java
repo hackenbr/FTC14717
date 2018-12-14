@@ -41,7 +41,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "sahibs code", group = "concept")
+@TeleOp(name = "matthews and a bit of sahibs code", group = "concept")
 public class Autonomous_sahib extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -49,7 +49,61 @@ public class Autonomous_sahib extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
-    private DcMotor arm = null;
+    private DcMotor hook = null;
+    //private DcMotor arm = null;
+
+    private void turnright (double degrees){
+
+        runtime.reset();
+
+        double movetime= (degrees/70);
+        while (opModeIsActive() && (runtime.time()<movetime)){
+            leftDrive.setPower(1);
+            rightDrive.setPower(-1);
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("left motor",leftDrive.toString());
+            telemetry.addData("right motor", rightDrive.toString());
+            telemetry.addData("other thing", runtime.time());
+            telemetry.update();
+        }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+    }
+    private void turnleft (double degrees){
+
+        runtime.reset();
+
+        double movetime= (degrees/70);
+        while (opModeIsActive() && (runtime.time()<movetime)){
+            leftDrive.setPower(-1);
+            rightDrive.setPower(1);
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("left motor",leftDrive.toString());
+            telemetry.addData("right motor", rightDrive.toString());
+            telemetry.addData("other thing", runtime.time());
+            telemetry.update();
+        }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+    }
+
+    private void move (double distance){  //distance is in cm. this function also doesn't account for sliding after motors shut off.
+
+        runtime.reset();
+
+        double movetime= (distance/68);
+        while (opModeIsActive() && (runtime.time()<movetime)){
+            leftDrive.setPower(1);
+            rightDrive.setPower(1);
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("left motor",leftDrive.toString());
+            telemetry.addData("right motor", rightDrive.toString());
+            telemetry.addData("other thing", runtime.time());
+            telemetry.update();
+        }
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
+    }
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -87,14 +141,13 @@ public class Autonomous_sahib extends LinearOpMode {
 
         leftDrive  = hardwareMap.get(DcMotor.class, "motor0");
         rightDrive = hardwareMap.get(DcMotor.class, "motor1");
-        arm = hardwareMap.get(DcMotor.class, "motor2");
-        // Most robots need the motor on one side to be reversed to drive forward
+        hook = hardwareMap.get(DcMotor.class, "motor2");
+        //arm = hardwareMap.get(DcMotor.class, "motor3");        // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        arm.setDirection(DcMotor.Direction.FORWARD);
-
-
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        hook.setDirection(DcMotor.Direction.FORWARD);
+        //arm.setDirection(DcMotor.Direction.FORWARD);
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         } else {
@@ -118,16 +171,27 @@ public class Autonomous_sahib extends LinearOpMode {
 
             double drive = 0;
             double turn  =  0;
-            double armMove = 0;
             double turbo = gamepad1.right_trigger+1;
+            double armMove = 0;
 
             leftPower    = Range.clip(drive + turn, -1.1*turbo, 1.1*turbo) ;
             rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
             armPower     = Range.clip(armMove, -1.0, 1.0);
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
+            //arm.setPower(armPower);
 
+            if (gamepad1.y) {
+                hook.setPower(1);
+            }
 
+            else if (gamepad1.a) {
+                hook.setPower(-1);
+            }
+
+            else {
+                hook.setPower(0);
+            }
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -160,16 +224,25 @@ public class Autonomous_sahib extends LinearOpMode {
                             }
                             if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                                 if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                                    leftDrive.setPower(0.5);
-                                    rightDrive.setPower(-0.5);
+                                    turnleft(90);
+                                    move(15);
+                                    turnright(90);
+                                    move(150);
+                                    turnright(90);
+                                    move(15);
+                                    turnleft(90);
                                     telemetry.addData("Gold Mineral Position", "Left");
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                                    leftDrive.setPower(-0.5);
-                                    rightDrive.setPower(0.5);
-                                    telemetry.addData("Gold Mineral Position", "Right");
+                                    turnright(90);
+                                    move(15);
+                                    turnleft(90);
+                                    move(150);
+                                    turnleft(90);
+                                    move(15);
+                                    turnright(90);
+                                    telemetry.addData("Gold Mineral Position", "right");
                                 } else {
-                                    leftDrive.setPower(0.5) ;
-                                    rightDrive.setPower(0.5);
+                                    move(150);
                                     telemetry.addData("Gold Mineral Position", "center");
                                 }
 
