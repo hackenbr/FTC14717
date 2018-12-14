@@ -4,16 +4,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name="matth-eew pathy thing for big tire robot", group="Linear Opmode")
+@TeleOp(name="path for big boy tire robot - close to base", group="Linear Opmode")
 public class pathing extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
+    private DcMotor hook = null;
+  //  private DcMotor bucket = null;
 
 
 
@@ -21,8 +24,8 @@ public class pathing extends LinearOpMode {
 
         runtime.reset();
 
-        //double movetime= (68/distance);
-        while (runtime.time()<degrees){
+        double movetime= (degrees/70);
+        while (opModeIsActive() && (runtime.time()<movetime)){
             leftDrive.setPower(-1);
             rightDrive.setPower(1);
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -35,12 +38,12 @@ public class pathing extends LinearOpMode {
         rightDrive.setPower(0);
     }
 
-    private void move (double distance){
+    private void move (double distance){  //distance is in cm. this function also doesn't account for sliding after motors shut off.
 
         runtime.reset();
 
-        //double movetime= (68/distance);
-        while (runtime.time()<distance){
+        double movetime= (distance/68);
+        while (opModeIsActive() && (runtime.time()<movetime)){
             leftDrive.setPower(1);
             rightDrive.setPower(1);
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -65,11 +68,15 @@ public class pathing extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "motor0");
         rightDrive = hardwareMap.get(DcMotor.class, "motor1");
+        hook =hardwareMap.get(DcMotor.class, "motor2");
+        //bucket =hardwareMap.get(DcMotor.class, "motor3");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        hook.setDirection(DcMotor.Direction.FORWARD);  //direction could be wrong
+       // bucket.setDirection(DcMotor.Direction.FORWARD);// direction could be wrong
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -77,13 +84,11 @@ public class pathing extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            turn(1);
-
-            move(1);
-
-            turn(2);
-
+            move(150);
+            turn(135);
+            move(250);
+            break;
+        }
             // Setup a variable for each drive wheel to save power level for telemetry
 
 
@@ -93,6 +98,7 @@ public class pathing extends LinearOpMode {
             telemetry.addData("right motor", rightDrive.toString());
             telemetry.addData("other thing", runtime.time());
             telemetry.update();
-        }
+
     }
 }
+
