@@ -1,45 +1,101 @@
-// note the turning functions will always set the robot to a specific position relative to its staring position
-// also note the functions don't reset the motor turning (even though I do) so if you just set a move for 1 cm at the end it will be fine
-private void turnright(double degrees){
-      boolean run=true;
-      while (run=true){
-          Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-          if (run=true && angles.firstAngle<degrees){
-              leftDrive.setPower(1);
-              rightDrive.setPower(0);
-              telemetry.addData("wa", "mario");
-          }
-          else {
-              run=false;
-              leftDrive.setPower(0);
-              rightDrive.setPower(0);
-              telemetry.addData("wa", "reeeeeee");
-              break;
-          }telemetry.update();
-      }
-  }
-private void turnleft(double degrees){
-    boolean run=true;
-    while (run=true){
-        Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        if (run=true && angles.firstAngle<degrees){
-            leftDrive.setPower(0);
+package org.firstinspires.ftc.robotcontroller.turny_Boi;
+
+import com.qualcomm.hardware.kauailabs.NavxMicroNavigationSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gyroscope;
+import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+/*
+ * This is an example LinearOpMode that shows how to use Kauai Labs navX Micro Robotics Navigation
+ * Sensor. It assumes that the sensor is configured with a name of "navx".
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ */
+@TeleOp(name = "turnreee", group = "Sensor")
+//@Disabled
+public class gyroRoaadsTakeMeeHooome extends LinearOpMode {
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+
+    /** In this sample, for illustration purposes we use two interfaces on the one gyro object.
+     * That's likely atypical: you'll probably use one or the other in any given situation,
+     * depending on what you're trying to do. {@link IntegratingGyroscope} (and it's base interface,
+     * {@link Gyroscope}) are common interfaces supported by possibly several different gyro
+     * implementations. {@link NavxMicroNavigationSensor}, by contrast, provides functionality that
+     * is unique to the navX Micro sensor.
+     */
+    IntegratingGyroscope gyro;
+    NavxMicroNavigationSensor navxMicro;
+
+    // A timer helps provide feedback while calibration is taking place
+    ElapsedTime timer = new ElapsedTime();
+    private void move (double distance){  //distance is in cm. this function also doesn't account for sliding after motors shut off.
+
+        runtime.reset();
+
+        double movetime= (distance/68);
+        while (opModeIsActive() && (runtime.time()<movetime)){
+            leftDrive.setPower(1);
             rightDrive.setPower(1);
-            telemetry.addData("wa", "luigi");
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("left motor",leftDrive.toString());
+            telemetry.addData("right motor", rightDrive.toString());
+            telemetry.addData("other thing", runtime.time());
+            telemetry.update();
         }
-        else {
-            run=false;
-            leftDrive.setPower(0);
-            rightDrive.setPower(0);
-            telemetry.addData("wa", "reeeeeee");
-            break;
-        }telemetry.update();
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
     }
-}
 
-//an example of the code being used
-
-@Override public void runOpMode() throws InterruptedException {
+    private void turnright(double degrees){
+        boolean run=true;
+        while (run=true){
+            Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            if (run=true && angles.firstAngle<degrees){
+                leftDrive.setPower(1);
+                rightDrive.setPower(0);
+                telemetry.addData("wa", "mario");
+            }
+            else {
+                run=false;
+                leftDrive.setPower(0);
+                rightDrive.setPower(0);
+                telemetry.addData("wa", "reeeeeee");
+                break;
+            }telemetry.update();
+        }
+    }
+    private void turnleft(double degrees){
+        boolean run=true;
+        while (run=true){
+            Orientation angles = gyro.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            if (run=true && angles.firstAngle<degrees){
+                leftDrive.setPower(0);
+                rightDrive.setPower(1);
+                telemetry.addData("wa", "luigi");
+            }
+            else {
+                run=false;
+                leftDrive.setPower(0);
+                rightDrive.setPower(0);
+                telemetry.addData("wa", "reeeeeee");
+                break;
+            }telemetry.update();
+        }
+    }
+    @Override public void runOpMode() throws InterruptedException {
         // Get a reference to a Modern Robotics GyroSensor object. We use several interfaces
         // on this object to illustrate which interfaces support which functionality.
         leftDrive  = hardwareMap.get(DcMotor.class, "motor0");
@@ -97,3 +153,17 @@ private void turnleft(double degrees){
             break;
         }
     }
+
+
+    String formatRate(float rate) {
+        return String.format("%.3f", rate);
+    }
+
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format("%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+}
