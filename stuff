@@ -1,0 +1,28 @@
+@Override public void runOpMode() throws InterruptedException {
+        // Get a reference to a Modern Robotics GyroSensor object. We use several interfaces
+        // on this object to illustrate which interfaces support which functionality.
+        leftDrive  = hardwareMap.get(DcMotor.class, "motor0");
+        rightDrive = hardwareMap.get(DcMotor.class, "motor1");
+        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.REVERSE);
+        navxMicro = hardwareMap.get(NavxMicroNavigationSensor.class, "navx");
+        gyro = (IntegratingGyroscope)navxMicro;
+        // If you're only interested int the IntegratingGyroscope interface, the following will suffice.
+        // gyro = hardwareMap.get(IntegratingGyroscope.class, "navx");
+
+        // The gyro automatically starts calibrating. This takes a few seconds.
+        telemetry.log().add("Gyro Calibrating. Do Not Move!");
+
+        // Wait until the gyro calibration is complete
+        timer.reset();
+        while (navxMicro.isCalibrating())  {
+            telemetry.addData("calibrating", "%s", Math.round(timer.seconds())%2==0 ? "|.." : "..|");
+            telemetry.update();
+            Thread.sleep(50);
+        }
+        telemetry.log().clear(); telemetry.log().add("Gyro Calibrated. Press Start.");
+        telemetry.clear(); telemetry.update();
+
+        // Wait for the start button to be pressed
+        waitForStart();
+        telemetry.log().clear();
