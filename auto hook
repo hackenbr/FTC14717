@@ -96,3 +96,10 @@ public class BasicOpMode_Linear_Sahib extends LinearOpMode {
         }
     }
 }
+
+
+
+//}
+  while (runtime.time() <3){
+    hook.setPower(0);
+   }
