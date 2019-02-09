@@ -22,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 
-@TeleOp(name = "Doesn't Detect Auto(Stormbreaker)", group = "concept")
+@TeleOp(name = "close to crater; can run without detection(Stormbreaker)", group = "concept")
 public class Bucket_Bot_Autonomous extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -213,16 +213,10 @@ public class Bucket_Bot_Autonomous extends LinearOpMode {
                     if ((elapsedTime.time()>10) && (elapsedTime.time()<10.5 )){
                         move(10);
                     }
-                    if ((elapsedTime.time()>20) &&(detectMineral=false)){
+                    if ((elapsedTime.time()>20) ){
                         telemetry.addData("can't find minerals","");
-                        move(10);
-                        Thread.sleep(50);
-                        moveback(10);
-                        Thread.sleep(50);
-                        turnleft(90);
-                        move(300);
-                        Thread.sleep(50);
-                        moveback(200);
+                        move(100);
+
 
 
                     }
@@ -255,11 +249,8 @@ public class Bucket_Bot_Autonomous extends LinearOpMode {
                                     Thread.sleep(50);
                                     turnright(90);
                                     Thread.sleep(50);
-                                    move(70);
-                                    Thread.sleep(50);
-                                    moveback(70);
-                                    Thread.sleep(50);
-                                    turnleft(90);
+                                    move(120);
+
                                     telemetry.addData("Gold Mineral Position", "Left");
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                     move(20);
@@ -270,21 +261,11 @@ public class Bucket_Bot_Autonomous extends LinearOpMode {
                                     Thread.sleep(50);
                                     turnleft(90);
                                     Thread.sleep(50);
-                                    move(70);
-                                    Thread.sleep(50);
-                                    moveback(70);
-                                    Thread.sleep(50);
-                                    turnleft(90);
-                                    Thread.sleep(50);
-                                    move(30);
+                                    move(110);
+
                                     telemetry.addData("Gold Mineral Position", "right");
                                 } else {
-                                    move(75);
-                                    Thread.sleep(50);
-                                    moveback(55);
-                                    turnleft(90);
-                                    move(15);
-
+                                    move(110);
                                     telemetry.addData("Gold Mineral Position", "center");
                                 }
                                 move(300);
