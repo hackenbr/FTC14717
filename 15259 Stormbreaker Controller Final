@@ -1,184 +1,105 @@
 package org.firstinspires.ftc.teamcode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import java.util.List;
-import java.lang.*;
-import com.qualcomm.hardware.kauailabs.NavxMicroNavigationSensor;
-import com.qualcomm.robotcore.hardware.Gyroscope;
-import com.qualcomm.robotcore.hardware.IntegratingGyroscope;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import java.util.Timer;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+@TeleOp(name="15259 Controller (Stormbreaker)", group="Linear Opmode")
+public class controlyness extends LinearOpMode {
 
-@Autonomous(name = "15259 Stormbreaker path (marker)", group = "concept")
-public class Close_To_Base extends LinearOpMode {
-    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
-    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
-    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+    // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     private DcMotor hook = null;
     private DcMotor arm = null;
-    private Servo marker = null;
-    private ElapsedTime elapsedTime = new ElapsedTime();
+    private Servo trap = null;
+    private double trapposition = 0;
 
-    private void turnright (double degrees){
-
-        runtime.reset();
-
-        double movetime= (degrees/210);
-        while (opModeIsActive() && (runtime.time()<movetime)){
-            leftDrive.setPower(1);
-            rightDrive.setPower(-1);
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("left motor",leftDrive.toString());
-            telemetry.addData("right motor", rightDrive.toString());
-            telemetry.addData("other thing", runtime.time());
-            telemetry.update();
-        }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-    }
-    private void turnleft (double degrees){
-
-        runtime.reset();
-
-        double movetime= (degrees/210);
-        while (opModeIsActive() && (runtime.time()<movetime)){
-            leftDrive.setPower(-1);
-            rightDrive.setPower(1);
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("left motor",leftDrive.toString());
-            telemetry.addData("right motor", rightDrive.toString());
-            telemetry.addData("other thing", runtime.time());
-            telemetry.update();
-        }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-    }
-
-    private void move (double distance){  //distance is in cm. this function also doesn't account for sliding after motors shut off.
-
-        runtime.reset();
-
-        double movetime= (distance/76.5);
-        while (opModeIsActive() && (runtime.time()<movetime)){
-            leftDrive.setPower(1);
-            rightDrive.setPower(1);
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("left motor",leftDrive.toString());
-            telemetry.addData("right motor", rightDrive.toString());
-            telemetry.addData("other thing", runtime.time());
-            telemetry.update();
-        }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-    }
-    private void moveback (double distance){  //distance is in cm. this function also doesn't account for sliding after motors shut off.
-
-        runtime.reset();
-
-        double movetime= (distance/76.5);
-        while (opModeIsActive() && (runtime.time()<movetime)){
-            leftDrive.setPower(-1);
-            rightDrive.setPower(-1);
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("left motor",leftDrive.toString());
-            telemetry.addData("right motor", rightDrive.toString());
-            telemetry.addData("other thing", runtime.time());
-            telemetry.update();
-        }
-        leftDrive.setPower(0);
-        rightDrive.setPower(0);
-    }
-    /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-     * web site at https://developer.vuforia.com/license-manager.
-     *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-     * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-     * Once you've obtained a license key, copy the string from the Vuforia web site
-     * and paste it in to your code on the next line, between the double quotes.
-     */
-    private static final String VUFORIA_KEY = "Aee3IwT/////AAABmUPHs0IW4kz/viGy76aZXMQkMGeo5EFXC+SUmupKBZzxWomke76D3lprzs3nsV0NfI9n9Y1+K1P0zQzAt3dfGRlcVOXflRjS81+/VLc2XkZ52ZJW7ZeQhg2Q2xgZUGhpQVZwvgX4Q1p8iW5iELCxkuQivPJ7k6cCqTM7wSFRJMmXqG7lFS4oa1vv6+yL8C0fvOkXZLh8ifrOzzQ+3ZUvEx/SrSM4mNAMbMfYEPE9JVGcTUOqoNkfe3ALWl6EfT7lJHxAn3Ae4KTAIfPtdcajQehTkRiqnf8mFQUEWDZFk8GZknSoZfyiaarqIUZBHvaSO9RyYCZUnI9y+zEh65S7TuR49DJCrT30uRY4QyuVfizT";
-
-    /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
-     * localization engine.
-     */
-    private VuforiaLocalizer vuforia;
-
-    /**
-     * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
-     * Detection engine.
-     */
-    private TFObjectDetector tfod;
 
     @Override
-    public void runOpMode()throws InterruptedException{
-        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
-        // first.
-        initVuforia();
+    public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        leftDrive = hardwareMap.get(DcMotor.class, "motor0");
+
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during the robot configuration
+        // step (using the FTC Robot Controller app on the phone).
+        leftDrive  = hardwareMap.get(DcMotor.class, "motor0");
         rightDrive = hardwareMap.get(DcMotor.class, "motor1");
         hook = hardwareMap.get(DcMotor.class, "motor2");
         arm = hardwareMap.get(DcMotor.class, "motor3");
-        marker = hardwareMap.get(Servo.class, "servo0");
+        trap = hardwareMap.get(Servo.class, "trap");
+
+
+
+        // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
         hook.setDirection(DcMotor.Direction.FORWARD);
         arm.setDirection(DcMotor.Direction.FORWARD);
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod();
-        }
-        else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD");
-        }
+
+
+
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        telemetry.log().clear();
-        if (opModeIsActive()){
-            /** Activate Tensor Flow Object Detection. */
-            if (tfod != null) {
-                tfod.activate();
-            }
-            double leftPower;
-            double rightPower;
+        runtime.reset();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+            // Setup a variable for each drive wheel to save power level for telemetry
+            double leftPower1;
+            double rightPower1;
+            double leftPower2;
+            double rightPower2;
             double armPower;
 
 
 
-            double drive = 0;
-            double turn  =  0;
-            double turbo = gamepad1.right_trigger+1;
-            double armMove = gamepad1.right_stick_y;
+            // Choose to drive using either Tank Mode, or POV Mode
+            // Comment out the method that's not used.  The default below is POV.
 
-            leftPower    = Range.clip(drive + turn, -1.1*turbo, 1.1*turbo) ;
-            rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
-            armPower     = Range.clip(armMove, -1.0, 1.0);
-            leftDrive.setPower(leftPower);
-            rightDrive.setPower(rightPower);
+            // POV Mode uses left stick to go forward, and right stick to turn.
+            // - This uses basic math to combine motions and is easier to drive straight.
+            double drive = -gamepad1.right_trigger;
+            double back = gamepad1.left_trigger;
+            double turn  =  -gamepad1.left_stick_x/1.75;
+            double armMove = -gamepad1.right_stick_y;
+
+
+
+            leftPower1    = Range.clip(drive + turn, -1.0, 1.0) ;
+            rightPower1   = Range.clip(drive - turn, -1.0, 1.0) ;
+            leftPower2   = Range.clip(back + turn, -1.0, 1.0) ;
+            rightPower2   = Range.clip(back - turn, -1.0, 1.0) ;
+            armPower   = Range.clip(armMove, -0.9, 0.8 );
+
+
+            // Tank Mode uses one stick to control each wheel.
+            // - This requires no math, but it is hard to drive forward slowly and keep straight.
+            // leftPower  = -gamepad1.left_stick_y ;
+            // rightPower = -gamepad1.right_stick_y ;
+
+            // Send calculated power to wheels
+            leftDrive.setPower(leftPower1);
+            rightDrive.setPower(rightPower1);
+            leftDrive.setPower(leftPower2);
+            rightDrive.setPower(rightPower2);
             arm.setPower(armPower);
+
+            if (gamepad1.x) {
+                trapposition += 0.005;
+            }
+            else if (gamepad1.b) {
+                trapposition -= 0.005;
+            }
 
             if (gamepad1.y) {
                 hook.setPower(1);
@@ -191,133 +112,14 @@ public class Close_To_Base extends LinearOpMode {
             else {
                 hook.setPower(0);
             }
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
-
-            // Send calculated power to wheels
-
-
-
-            while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    /*if (elapsedTime.time() <9.5){
-                        hook.setPower(1);
-                    }
-                    if (elapsedTime.time() >9.5){
-                        hook.setPower(0);
-                    }*/
-                    if ((elapsedTime.time()>9.5) && (elapsedTime.time()<11 )){
-                       // move(5);
-                    }
-
-                    if (elapsedTime.time()>20){
-                        move(15);
-                        Thread.sleep(50);
-                        marker.setPosition(45);
-                    }
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        if (updatedRecognitions.size() == 3 && elapsedTime.time()>10.08) {
-
-                            int goldMineralX = -1;
-                            int silverMineral1X = -1;
-                            int silverMineral2X = -1;
-                            for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                    goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1) {
-                                    silverMineral1X = (int) recognition.getLeft();
-                                } else {
-                                    silverMineral2X = (int) recognition.getLeft();
-                                }
-                            }
-
-
-                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                                    move(11);
-                                    Thread.sleep(50);
-                                    turnleft(90);
-                                    Thread.sleep(50);
-                                    move(41);
-                                    Thread.sleep(50);
-                                    turnright(90);
-                                    Thread.sleep(50);
-                                    move(26);
-                                    Thread.sleep(50);
-                                    marker.setPosition(90);
-
-
-
-                                    telemetry.addData("Gold Mineral Position", "Left");
-                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                                    move(11);
-                                    Thread.sleep(50);
-                                    turnright(90);
-                                    Thread.sleep(50);
-                                    move(41);
-                                    Thread.sleep(50);
-                                    turnleft(90);
-                                    Thread.sleep(50);
-                                    turnright(90);
-                                    Thread.sleep(50);
-                                    move(26);
-                                    marker.setPosition(90);
-
-                                    telemetry.addData("Gold Mineral Position", "right");
-                                } else if (goldMineralX < silverMineral1X && goldMineralX > silverMineral2X) {
-                                    move(32);
-                                    marker.setPosition(90);
-                                    telemetry.addData("Gold Mineral Position", "center");
-                                }
-                            }
-                        }
-                        telemetry.addData("Status", "Run Time: " + runtime.toString());
-                        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-                        telemetry.addData("name:", "sahib");
-                        telemetry.update();
-                    }
-                }
-
-            }
+            trap.setPosition(trapposition);
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower1, rightPower1);
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower2, rightPower2);
+            telemetry.addData("name:", "sahib");
+            telemetry.addData("Hook height:", hook.getCurrentPosition());
+            telemetry.update();
         }
-
-        if (tfod != null) {
-            tfod.shutdown();
-        }
-    }
-
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    private void initVuforia(){
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK ;
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
-    }
-
-    /**
-     * Initialize the Tensor Flow Object Detection engine.
-     */
-    private void initTfod(){
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 }
